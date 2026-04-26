@@ -67,7 +67,7 @@ To switch between local and paid models, simply change the `"mode"` value in you
 ---
 
 ## 📬 Contact
-**Wajoud Noorani** - [Wajoudnoorani59@gmail.com](mailto:Wajoudnoorani59@gmail.com)
+**Wajoud Noorani** - [Wajoudnoorani59@gmail.com](mailto:wajoudnoorani59@gmail.com)
 
 ---
 
