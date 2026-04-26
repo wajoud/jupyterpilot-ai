@@ -8,6 +8,7 @@
 - **%do <prompt>**: Transform instructions into Python code instantly.
 - **%fix**: Post-mortem self-healing for your last error.
 - **Context Awareness**: Remembers your last 3 cells for accurate variable usage.
+- **Data Observer (New)**: Automatically detects Pandas DataFrames, SQL engines, and MongoDB databases to provide schema context to the AI.
 - **Hybrid Support**: Switch between local **Ollama** and cloud **GPT-4o/Claude** via LiteLLM.
 
 ---
@@ -16,6 +17,12 @@
 
 ```bash
 pip install jupyterpilot-ai
+```
+
+### Enable Data Observer (Optional)
+To enable automatic schema detection for Pandas, SQL, and MongoDB, install the data extras:
+```bash
+pip install "jupyterpilot-ai[data]"
 ```
 
 ### Enable the Extension
