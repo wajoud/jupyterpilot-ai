@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jupyterpilot-ai"
+version = "0.1.0"
+description = "Agentic AI coding partner for IPython and Jupyter"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "requests",
+    "ipython",
+    "litellm"
+]
+authors = [
+    {name = "Wajoud Noorani", email = "wajoudnoorani59@gmail.com"}
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
