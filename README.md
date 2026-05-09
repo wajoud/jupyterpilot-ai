@@ -7,6 +7,7 @@
 ## 🚀 Features
 - **%do <prompt>**: Transform instructions into Python code instantly.
 - **%fix**: Post-mortem self-healing for your last error.
+- **%review**: Analyze the previous cell and get optimization suggestions or code reviews.
 - **Context Awareness**: Remembers your last 3 cells for accurate variable usage.
 - **Data Observer (New)**: Automatically detects Pandas DataFrames, SQL engines, and MongoDB databases to provide schema context to the AI.
 - **Hybrid Support**: Switch between local **Ollama** and cloud **GPT-4o/Claude** via LiteLLM.
@@ -51,6 +52,11 @@ To switch between local and paid models, simply change the `"mode"` value in you
         "provider": "openai",
         "model": "gpt-4o",
         "api_key": "sk-..."
+    },
+    "custom_jar_ai": {
+        "url": "",
+        "model": "",
+        "api_key": ""
     }
 }
 ```
@@ -65,11 +71,16 @@ To switch between local and paid models, simply change the `"mode"` value in you
   - Supports OpenAI, Anthropic (Claude), Google (Gemini), etc.
   - Specify your `provider`, `model`, and `api_key`.
 
+- **Custom Jar AI Mode (`"mode": "custom_jar_ai"`)**:
+  - Connect to your custom AI API endpoint directly.
+  - Set your custom `url`, `model`, and `api_key`.
+
 ---
 
 ## 🛠️ Usage
 - `%do plot a sine wave`
 - `%fix` (after an error)
+- `%review` (to review the last run cell)
 
 ---
 

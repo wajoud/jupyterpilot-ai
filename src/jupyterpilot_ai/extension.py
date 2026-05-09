@@ -43,6 +43,30 @@ class JupyterPilotMagics(Magics):
         fixed_code = self.provider.generate(prompt, context + data_context)
         self.shell.set_next_input(fixed_code)
 
+    @line_magic
+    def review(self, line):
+        """%review - Review the last cell's code and suggest optimizations."""
+        history = self.shell.history_manager.input_hist_raw
+        valid = [h for h in history if h.strip() and not h.startswith(("%do", "%fix", "%review"))]
+        if not valid:
+            print("No previous code found to review.")
+            return
+            
+        last_cell = valid[-1]
+        context = self._get_context()
+        data_context = self.introspector.get_context()
+        
+        prompt = f"Review the following code. Provide an explanation of any issues or potential optimizations, followed by the optimized code.\n\nCode:\n{last_cell}"
+        system_prompt = "You are JupyterPilot, an expert code reviewer. Provide constructive feedback, point out potential bugs or inefficiencies, and offer an optimized version of the code. You can use markdown."
+        
+        review_text = self.provider.generate(prompt, context + data_context, system_prompt=system_prompt, raw=True)
+        
+        try:
+            from IPython.display import display, Markdown
+            display(Markdown(review_text))
+        except ImportError:
+            print(review_text)
+
 def load_ipython_extension(ipython):
     """Register the extension with IPython."""
     ipython.register_magics(JupyterPilotMagics(ipython))

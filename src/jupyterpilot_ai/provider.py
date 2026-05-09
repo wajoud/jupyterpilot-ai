@@ -32,17 +32,29 @@ class LLMProvider:
         self.config = {
             "mode": "local",
             "local": {"url": "http://localhost:11434/api/generate", "model": "qwen2.5-coder:7b"},
-            "cloud": {"model": "gpt-4o", "provider": "openai"}
+            "cloud": {"model": "gpt-4o", "provider": "openai"},
+            "custom_jar_ai": {
+                "url": "",
+                "model": "",
+                "api_key": ""
+            }
         }
 
-    def generate(self, prompt, context=""):
-        system_prompt = "You are JupyterPilot, a high-performance coding assistant. Return ONLY executable Python code. No markdown, no explanations."
+    def generate(self, prompt, context="", system_prompt=None, raw=False):
+        if system_prompt is None:
+            system_prompt = "You are JupyterPilot, a high-performance coding assistant. Return ONLY executable Python code. No markdown, no explanations."
         full_prompt = f"{system_prompt}\n\nContext from previous cells:\n{context}\n\nTask: {prompt}"
         
         if self.config.get("mode") == "local":
-            return self._generate_local(full_prompt)
+            text = self._generate_local(full_prompt)
+        elif self.config.get("mode") == "custom_jar_ai":
+            text = self._generate_custom_jar_ai(full_prompt)
         else:
-            return self._generate_cloud(full_prompt)
+            text = self._generate_cloud(full_prompt)
+            
+        if raw:
+            return text
+        return self._clean_code(text)
 
     def _generate_local(self, prompt):
         local_cfg = self.config.get("local", {})
@@ -55,7 +67,7 @@ class LLMProvider:
                 timeout=15
             )
             text = response.json().get("response", "").strip()
-            return self._clean_code(text)
+            return text
         except Exception as e:
             return f"# Local Inference Error: {e}"
 
@@ -74,9 +86,34 @@ class LLMProvider:
                 messages=[{"role": "user", "content": prompt}]
             )
             text = response.choices[0].message.content.strip()
-            return self._clean_code(text)
+            return text
         except Exception as e:
             return f"# Cloud Inference Error: {e}"
+
+    def _generate_custom_jar_ai(self, prompt):
+        cfg = self.config.get("custom_jar_ai", {})
+        url = cfg.get("url", "")
+        model = cfg.get("model", "")
+        api_key = cfg.get("api_key", "")
+        
+        if not url:
+            return "# Error: custom_jar_ai url not configured in config.json"
+            
+        try:
+            headers = {"Content-Type": "application/json"}
+            if api_key:
+                headers["Authorization"] = f"Bearer {api_key}"
+                
+            response = requests.post(
+                url,
+                headers=headers,
+                json={"model": model, "messages": [{"role": "user", "content": prompt}]},
+                timeout=30
+            )
+            text = response.json().get("choices", [{}])[0].get("message", {}).get("content", "").strip()
+            return text
+        except Exception as e:
+            return f"# Custom Jar AI Inference Error: {e}"
 
     def _clean_code(self, text):
         if "```" in text:
