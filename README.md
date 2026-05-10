@@ -10,6 +10,7 @@
 - **%review**: Analyze the previous cell and get optimization suggestions or code reviews.
 - **Context Awareness**: Remembers your last 3 cells for accurate variable usage.
 - **Data Observer (New)**: Automatically detects Pandas DataFrames, SQL engines, and MongoDB databases to provide schema context to the AI.
+  - *Smart MongoDB Introspection*: Aggregates schema keys from the 20 most recent documents and extracts collection indexes, helping the AI write highly optimized queries.
 - **Hybrid Support**: Switch between local **Ollama** and cloud **GPT-4o/Claude** via LiteLLM.
 
 ---
@@ -78,9 +79,27 @@ To switch between local and paid models, simply change the `"mode"` value in you
 ---
 
 ## 🛠️ Usage
+
+### Basic Commands
 - `%do plot a sine wave`
 - `%fix` (after an error)
 - `%review` (to review the last run cell)
+
+### Advanced Data Observer Example
+If you have `jupyterpilot-ai[data]` installed, simply connecting to your database in a cell is enough for the AI to understand your schema.
+
+```python
+# Cell 1: Connect to your database (Pandas, SQL, or Mongo)
+from pymongo import MongoClient
+client = MongoClient("mongodb://localhost:27017/")
+db = client["Testing"]
+```
+
+```python
+# Cell 2: Ask the AI to write a query without explaining your collections or fields!
+%do find the most recently active admin user
+```
+*Behind the scenes, JupyterPilot automatically extracts the collection names, schema keys, and indices from `db` and injects them into the AI's context so it generates perfect code.*
 
 ---
 

@@ -81,11 +81,45 @@ class SchemaIntrospector:
             collections = db.list_collection_names()[:5] # Limit to 5 collections
             col_info = []
             for col_name in collections:
-                sample = db[col_name].find_one()
+                # 1. Fetch latest up to 20 docs to gather comprehensive schema
+                try:
+                    cursor = db[col_name].find().sort('_id', -1).limit(20)
+                    docs = list(cursor)
+                except Exception:
+                    # Fallback if sorting by _id fails
+                    cursor = db[col_name].find().limit(20)
+                    docs = list(cursor)
+                
+                # 2. Extract all unique keys across these 20 docs
+                schema_keys = set()
+                for doc in docs:
+                    schema_keys.update(doc.keys())
+                schema_str = ", ".join(sorted(list(schema_keys))) if schema_keys else "None"
+                
+                # 3. Retrieve index information
+                try:
+                    indexes = db[col_name].index_information()
+                    indexed_fields = []
+                    for idx_name, idx_info in indexes.items():
+                        if 'key' in idx_info:
+                            keys = [k[0] for k in idx_info['key']]
+                            indexed_fields.append(f"{idx_name}({','.join(keys)})")
+                    index_str = ", ".join(indexed_fields) if indexed_fields else "None"
+                except Exception:
+                    index_str = "Unknown"
+
+                # 4. Use the latest document as a single sample
+                sample = docs[0] if docs else None
                 # Remove _id if it's an ObjectId for JSON serialization
                 if sample and '_id' in sample:
                     sample['_id'] = str(sample['_id'])
-                col_info.append(f"  - Collection '{col_name}': Sample Doc: {json.dumps(sample) if sample else '{}'}")
+                    
+                col_info.append(
+                    f"  - Collection '{col_name}':\n"
+                    f"    - Schema Keys: {schema_str}\n"
+                    f"    - Indexes: {index_str}\n"
+                    f"    - Sample Doc: {json.dumps(sample) if sample else '{}'}"
+                )
             
             info_str = "\n".join(col_info)
             return f"MongoDB Database '{name}':\n{info_str}"
