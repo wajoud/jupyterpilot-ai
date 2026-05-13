@@ -54,7 +54,7 @@ To switch between local and paid models, simply change the `"mode"` value in you
         "model": "gpt-4o",
         "api_key": "sk-..."
     },
-    "custom_jar_ai": {
+    "custom_link_ai": {
         "url": "",
         "model": "",
         "api_key": ""
@@ -72,7 +72,7 @@ To switch between local and paid models, simply change the `"mode"` value in you
   - Supports OpenAI, Anthropic (Claude), Google (Gemini), etc.
   - Specify your `provider`, `model`, and `api_key`.
 
-- **Custom Jar AI Mode (`"mode": "custom_jar_ai"`)**:
+- **Custom Link AI Mode (`"mode": "custom_link_ai"`)**:
   - Connect to your custom AI API endpoint directly.
   - Set your custom `url`, `model`, and `api_key`.
 

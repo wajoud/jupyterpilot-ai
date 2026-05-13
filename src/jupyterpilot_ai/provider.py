@@ -33,7 +33,7 @@ class LLMProvider:
             "mode": "local",
             "local": {"url": "http://localhost:11434/api/generate", "model": "qwen2.5-coder:7b"},
             "cloud": {"model": "gpt-4o", "provider": "openai"},
-            "custom_jar_ai": {
+            "custom_link_ai": {
                 "url": "",
                 "model": "",
                 "api_key": ""
@@ -47,8 +47,8 @@ class LLMProvider:
         
         if self.config.get("mode") == "local":
             text = self._generate_local(full_prompt)
-        elif self.config.get("mode") == "custom_jar_ai":
-            text = self._generate_custom_jar_ai(full_prompt)
+        elif self.config.get("mode") == "custom_link_ai":
+            text = self._generate_custom_link_ai(full_prompt)
         else:
             text = self._generate_cloud(full_prompt)
             
@@ -90,14 +90,14 @@ class LLMProvider:
         except Exception as e:
             return f"# Cloud Inference Error: {e}"
 
-    def _generate_custom_jar_ai(self, prompt):
-        cfg = self.config.get("custom_jar_ai", {})
+    def _generate_custom_link_ai(self, prompt):
+        cfg = self.config.get("custom_link_ai", {})
         url = cfg.get("url", "")
         model = cfg.get("model", "")
         api_key = cfg.get("api_key", "")
         
         if not url:
-            return "# Error: custom_jar_ai url not configured in config.json"
+            return "# Error: custom_link_ai url not configured in config.json"
             
         try:
             headers = {"Content-Type": "application/json"}
@@ -113,7 +113,7 @@ class LLMProvider:
             text = response.json().get("choices", [{}])[0].get("message", {}).get("content", "").strip()
             return text
         except Exception as e:
-            return f"# Custom Jar AI Inference Error: {e}"
+            return f"# Custom Link AI Inference Error: {e}"
 
     def _clean_code(self, text):
         if "```" in text:
